@@ -43,26 +43,32 @@ class App extends Component {
         <Section title="Please leave feedback">
           {Object.keys(this.state).map(key => {
             // eslint-disable-next-line default-case
+            let option = null;
             switch(key) {
               case 'good':
-                return <FeedbackOptions
+                  option = <FeedbackOptions
                   key={shortid.generate()} 
                   option={key}
                   onLeaveFeedback={this.handleGoodCommentIncrement}
                 />
+                break;
               case 'bad':
-                return <FeedbackOptions
+                  option = <FeedbackOptions
                   key={shortid.generate()} 
                   option={key}
                   onLeaveFeedback={this.handleBadCommentIncrement}
                 />
+                break;
               case 'neutral':
-                return <FeedbackOptions
+                  option = <FeedbackOptions
                   key={shortid.generate()}
                   option={key}
                   onLeaveFeedback={this.handleNeutralCommentIncrement}
                 />
+                break;
+              default: break;
             };
+            return option;
             })}
         </Section>
         <Section title="Statistics">
