@@ -1,4 +1,10 @@
 import { Component } from "react";
+import shortid from "shortid";
+
+import { FeedbackOptions } from "./FeedbackOptions/FeedbackOptions";
+import { Statistics } from "./Statistics/Statistics";
+import { Section } from "./Section/Section";
+import { Notification } from "./Notification/Notification";
 
 class App extends Component {
   
@@ -7,6 +13,7 @@ class App extends Component {
     neutral: 0,
     bad: 0
   };
+
   handleGoodCommentIncrement = () => {
     this.setState((prevState) => ({ good: prevState.good + 1}));
   };
@@ -19,27 +26,71 @@ class App extends Component {
     this.setState({ neutral: this.state.neutral + 1});
   };
   
-  countTotalFeedback() {
-
+  countTotalFeedback = () => {
+    const { good, neutral, bad } = this.state;
+    return good + neutral + bad;
   };
 
   countPositiveFeedbackPercentage() {
-
+    const total = this.countTotalFeedback();
+    const { good } = this.state; 
+    return total && Math.round((good * 100) / total);
   };
 
   render() {
     return (
       <>
-        <section>
-          <h1>Please leave feedback</h1>
-          <button type="button" onClick={this.handleGoodCommentIncrement}>Good</button>
-          <button type="button" onClick={this.handleNeutralCommentIncrement}>Neutral</button>
-          <button type="button" onClick={this.handleBadCommentIncrement}>Bad</button><br />
-          <h2>Statistics</h2>
-          <span>Good: </span><span>{this.state.good}</span><br />
-          <span>Neutral: </span><span>{this.state.neutral}</span><br />
-          <span>Bad: </span><span>{this.state.bad}</span>
-        </section>
+        <Section title="Please leave feedback">
+          {Object.keys(this.state).map(key => {
+            // eslint-disable-next-line default-case
+            switch(key) {
+              case 'good':
+                return <FeedbackOptions
+                  key={shortid.generate()} 
+                  option={key}
+                  onLeaveFeedback={this.handleGoodCommentIncrement}
+                />
+              case 'bad':
+                return <FeedbackOptions
+                  key={shortid.generate()} 
+                  option={key}
+                  onLeaveFeedback={this.handleBadCommentIncrement}
+                />
+              case 'neutral':
+                return <FeedbackOptions
+                  key={shortid.generate()}
+                  option={key}
+                  onLeaveFeedback={this.handleNeutralCommentIncrement}
+                />
+            };
+            })}
+        </Section>
+        <Section title="Statistics">
+          {this.state.good > 0 || this.state.neutral > 0 || this.state.bad > 0 ?
+          <ul>
+              <Statistics
+              key={shortid.generate()}
+              good={this.state.good}
+            />
+              <Statistics
+              key={shortid.generate()}
+              neutral={this.state.neutral}
+            />
+              <Statistics
+              key={shortid.generate()}
+              bad={this.state.bad}
+            />
+              <Statistics
+              key={shortid.generate()}
+              total={this.countTotalFeedback()}
+            />
+              <Statistics
+              key={shortid.generate()}
+              positiveFeedback={this.countPositiveFeedbackPercentage()}
+            />
+          </ul> :
+          <Notification/>}
+        </Section>
       </>
     );
   };
